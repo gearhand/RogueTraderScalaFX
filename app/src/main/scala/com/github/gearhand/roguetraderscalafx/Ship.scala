@@ -47,6 +47,27 @@ object Examples {
   //val foo = Supp
 }
 
+object Functions {
+  // generate = generateSupp . generateArt . generateEssentials
+  def dekart[A,B,C](op: (A,B) => C) (c1: Iterable[A]) (c2: Iterable[B]): Iterable[C] = {
+    c1.flatMap { a => c2.map { b => op(a, b) }}
+  }
+  def dekartSpecific(essentialVariant: List[EssentialVariant], essentials: List[Essential]): List[EssentialVariant] = {
+    essentialVariant.flatMap { variant =>
+      essentials.map { ess => variant.updated(ess.category, ess)}
+    }
+  }
+  type EssentialVariant = Map[EssentialCategory,Essential]
+  type Catalog = Map[EssentialCategory, List[Essential]]
+  // Хотим собрать список наборов
+  def generateEssentials (hull: Hull) (catalog: Catalog): List[EssentialVariant] = {
+    val init: List[EssentialVariant] = List(Map.empty)
+    catalog.foldLeft(init) { case (foobar, (_, essentials: List[Essential])) =>
+      dekartSpecific(foobar, essentials)
+    }
+  }
+}
+
 //  -- Проблема артиллерии!
 //    -- Артиллерия, с одной стороны, является дополнительным компонентом.
 //    -- С другой стороны, она занимает артиллерийский слот
@@ -70,11 +91,7 @@ object Examples {
 //  --     dekartSpecific 'key' 'result' 'oneCat'
 //
 //  dekart :: [a] -> [b] -> [(a,b)]
-//    dekart (x:
-//
-//  import RogueTraderScalaFX.Artillery.createArtCells
-//
-//  xs) y = ((x,) <$> y) <> dekart xs y
+//    dekart (x:xs) y = ((x,) <$> y) <> dekart xs y
 //    dekart [] _ = []
 //
 //  dekartGeneric1 :: (Applicative fa) => fa a -> fa b -> fa (a,b)

@@ -2,7 +2,7 @@ package com.github.gearhand.roguetraderscalafx
 
 import enumeratum._
 
-class Essential(category: EssentialCategory
+class Essential(val category: EssentialCategory
                 , hulls  : Set[HullType]
                 , power  : Int
                 , space  : Int
@@ -14,13 +14,13 @@ class Essential(category: EssentialCategory
 sealed trait EssentialCategory extends EnumEntry
 object EssentialCategory extends Enum[EssentialCategory] {
   val values = findValues
-  case object Drive
-  case object WarpDrive
-  case object GellarField
-  case object VoidShield
-  case object Bridge
-  case object LifeSupport
-  case object Quarters
-  case object Sensors
+  case object Drive extends EssentialCategory
+  case object WarpDrive extends EssentialCategory
+  case object GellarField extends EssentialCategory
+  case object VoidShield extends EssentialCategory
+  case object Bridge extends EssentialCategory
+  case object LifeSupport extends EssentialCategory
+  case object Quarters extends EssentialCategory
+  case object Sensors extends EssentialCategory
 }
 // deriving (Enum, Bounded, Eq, Ord)
