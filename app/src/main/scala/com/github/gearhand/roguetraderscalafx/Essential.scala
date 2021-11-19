@@ -2,13 +2,13 @@ package com.github.gearhand.roguetraderscalafx
 
 import enumeratum._
 
-class Essential(val category: EssentialCategory
-                , hulls  : Set[HullType]
-                , power  : Int
-                , space  : Int
-                , price  : Int
-                , traits : String
-                , name   : String
+case class Essential(category: EssentialCategory)
+                ( val hulls  : Set[HullType]
+                , val power  : Int
+                , val space  : Int
+                , val name   : String
+                , val price  : Option[Int]
+                , val traits : Option[String]
 )
 
 sealed trait EssentialCategory extends EnumEntry

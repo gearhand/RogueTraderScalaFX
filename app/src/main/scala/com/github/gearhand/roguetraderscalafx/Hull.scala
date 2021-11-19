@@ -21,14 +21,14 @@ sealed trait HullType extends EnumEntry
 object HullType extends Enum[HullType] {
   val values = findValues
 
-  case object Any
+  case object Any extends HullType
   case object Transport extends HullType
-  case object Raider
-  case object Frigate
-  case object LightCruiser
-  case object Cruiser
-  case object GrandCruiser // Battle Fleet Koronus hull type
-  case object LinearCruiser // Battle Fleet Koronus hull type
+  case object Raider extends HullType
+  case object Frigate extends HullType
+  case object LightCruiser extends HullType
+  case object Cruiser extends HullType
+  case object GrandCruiser extends HullType // Battle Fleet Koronus hull type
+  case object LinearCruiser extends HullType // Battle Fleet Koronus hull type
 }
 
 sealed trait ArtillerySlot extends EnumEntry

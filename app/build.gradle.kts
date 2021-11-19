@@ -29,6 +29,8 @@ dependencies {
     // For better enums (C++ waves a hand)
     implementation("com.beachape", "enumeratum_2.13", "1.7.0")
 
+    implementation("net.jcazevedo",  "moultingyaml_2.13", "0.4.2")
+
     // Use Scalatest for testing our library
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.scalatest:scalatest_2.13:3.2.6")

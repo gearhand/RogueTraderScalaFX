@@ -3,6 +3,10 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
+import com.github.gearhand.roguetraderscalafx.EssentialCategory.Drive
+import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.EssentialsFormat
+import net.jcazevedo.moultingyaml.YamlValue
+import net.jcazevedo.moultingyaml._
 import org.scalatest.funsuite.AnyFunSuite
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
@@ -13,5 +17,18 @@ class AppSuite extends AnyFunSuite {
     assert(App.greeting() != null)
   }
 
+  test("Components deserialization") {
+
+    println(System.getProperty("user.dir"))
+    val source = io.Source.fromFile("src/test/resources/test.yml", "utf-8")
+    val yamlAst = try
+      EssentialsFormat.read(source.getLines().mkString("\n").parseYaml)
+      finally source.close()
+
+    assert(yamlAst.get(Drive).map { list =>
+      val head = list.head
+      head.name.equals("Jovian Pattern Class 1 Drive") && head.hulls.contains(HullType.Transport)
+    }.get)
+  }
 
 }
