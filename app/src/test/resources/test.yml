@@ -1,4 +1,4 @@
---- !essentials
+---
 Drive:
   - hull: !!set { Transport }
     power: 35

@@ -20,15 +20,7 @@ object Race extends Enum[Race] {
 } // deriving (Show, Enum, Bounded)
 
 
-sealed trait SupplementalSpec extends EnumEntry
-object SupplementalSpec extends Enum[SupplementalSpec] {
-  val values = findValues
-  case object Weapon
-  case object Unique
-  case object Regular
-}
-
-class Supplemental ( category: SupplementalSpec, hulls: Set[HullType], power: Int, space: Int, cost: Int, traits: String)
+case class Supplemental (hulls: Set[HullType], power: Int, space: Int, cost: Int, name: String, traits: Option[String])
 
 object Examples {
   // "Jerico" pilgrim vessel

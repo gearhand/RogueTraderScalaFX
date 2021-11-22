@@ -1,6 +1,9 @@
 package com.github.gearhand.roguetraderscalafx
 
+import com.github.gearhand.roguetraderscalafx.HullType.{Frigate, Raider, Transport}
 import enumeratum._
+
+import scala.collection.mutable
 
 class Hull ( val hullName: String
             , val hullType        : HullType
@@ -12,9 +15,20 @@ class Hull ( val hullName: String
             , val turretsClass    : Int
             , val space           : Int
             , val cost            : Int
-            , val artilleryCells  : Map[ArtillerySlot, Array[Option[Artillery]]]
+            , val artilleryCells  : mutable.Seq[ArtilleryCell]
             , val traits          : String
           )
+{
+  def addArt(component: Artillery) = {
+    val found = artilleryCells.find(arg => component.validateConstraint(hullType, arg.slot) && arg.cell.isEmpty)
+    found match {
+      case Some(value) =>
+        value.cell = Some(component)
+        Right("OK")
+      case None => Left("Cannot add")
+    }
+  }
+}
 
 sealed trait HullType extends EnumEntry
 
@@ -43,32 +57,63 @@ object ArtillerySlot extends Enum[ArtillerySlot] {
   case object Kile extends ArtillerySlot
 }
 
-sealed trait Artillery extends EnumEntry
+sealed trait Artillery extends EnumEntry {
+  val  name : String
+  val constraint : Set[HullType]
+  val power : Int
+  val space : Int
+  val cost  : Int
+  val damage   : String
+  val crit     : Int
+  val range    : Int
+  val slotConstraint: Option[Set[ArtillerySlot]]
+
+  def validateConstraint(hull: HullType, slot: ArtillerySlot): Boolean = {
+    slotConstraint.map( _.contains(slot) ).getOrElse(default = true) &&
+      constraint.contains(hull)
+  }
+}
+
+case class ArtilleryCell(slot: ArtillerySlot, var cell: Option[Artillery])
+
 object Artillery extends Enum[Artillery] {
   val values = findValues
   case class Battery ( name : String
-                 , constraint : Hull => Boolean
-                 , artPower : Int
-                 , artSpace : Int
-                 , artCost  : Int
+                 , constraint : Set[HullType]
+                 , power : Int
+                 , space : Int
+                 , cost  : Int
                  , damage   : String
                  , crit     : Int
                  , range    : Int
-               )
+                 , slotConstraint: Option[Set[ArtillerySlot]]
+               ) extends Artillery
   case class Lance ( name : String
-               , constraint : Hull => Boolean
-               , artPower : Int
-               , artSpace : Int
-               , artCost  : Int
+               , constraint : Set[HullType]
+               , power : Int
+               , space : Int
+               , cost  : Int
                , damage   : String
                , crit     : Int
                , range    : Int
-             )
-  type ArtilleryCells = Map[ArtillerySlot, Array[Option[Artillery]]]
-  val createArtCells: List[(ArtillerySlot, Int)] => ArtilleryCells =
-    (slotList: List[(ArtillerySlot, Int)]) => {
-      slotList.map{ case (slot: ArtillerySlot, quantity: Int) => (slot: ArtillerySlot, Array.fill(quantity) (Option.empty[Artillery])) }.toMap
+               , slotConstraint: Option[Set[ArtillerySlot]]
+             ) extends Artillery
+  {
+    override def validateConstraint(hull: HullType, slot: ArtillerySlot): Boolean = {
+      hull match  {
+        case Transport | Raider | Frigate => slot == ArtillerySlot.Forward
+        case _ => super.validateConstraint(hull, slot)
+      }
     }
+  }
+  def createArtCells (slotList: Seq[(ArtillerySlot, Int)]): mutable.Seq[ArtilleryCell] = slotList.flatMap{
+      case (slot: ArtillerySlot, quantity: Int) => Array.fill(quantity) (ArtilleryCell(slot, None))
+    }.toBuffer
+
+
+  // Какие вообще бывают ограничения на артиллерию? Есть ограничение компонента по корпусу,
+  // есть ограничение для боковых батарей (только боковой слот) и есть ограничение для лэнсов
+  // (только носовой слот для транспортов, фрегатов и рейдеров)
 }
 
 //createArtCells : [(ArtillerySlot, Natural)] -> ArtilleryCells

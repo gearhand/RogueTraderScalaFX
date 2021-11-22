@@ -3,13 +3,16 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
+import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance, createArtCells}
+import com.github.gearhand.roguetraderscalafx.ArtillerySlot.{Forward, LeftBoard, RightBoard}
 import com.github.gearhand.roguetraderscalafx.EssentialCategory.Drive
+import com.github.gearhand.roguetraderscalafx.HullType.Transport
 import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.EssentialsFormat
-import net.jcazevedo.moultingyaml.YamlValue
 import net.jcazevedo.moultingyaml._
 import org.scalatest.funsuite.AnyFunSuite
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
+
 
 @RunWith(classOf[JUnitRunner])
 class AppSuite extends AnyFunSuite {
@@ -31,4 +34,55 @@ class AppSuite extends AnyFunSuite {
     }.get)
   }
 
+  test("Artillery addition") {
+    val exampleHull = new Hull("Jerico"
+      , Transport
+      , 3
+      , -10
+      , 5
+      , 50
+      , 12
+      , 1
+      , 45
+      , 20
+      , createArtCells(List((Forward, 1), (LeftBoard, 1), (RightBoard, 1)))
+      , "Грузовое судно")
+
+    val lance = Lance("TestLance", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+    val boardGun = Battery("TestBoard", Set(Transport), 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
+    val regular = Battery("TestRegular", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+
+    assertResult(Right("OK")) (exampleHull.addArt(boardGun))
+    assertResult(Right("OK")) (exampleHull.addArt(regular))
+    assertResult(Left("Cannot add")) (exampleHull.addArt(lance))
+    assertResult(ArtilleryCell(Forward, Some(regular)))(exampleHull.artilleryCells.head)
+    assertResult(ArtilleryCell(LeftBoard, Some(boardGun)))(exampleHull.artilleryCells(1))
+    assertResult(ArtilleryCell(RightBoard, None))(exampleHull.artilleryCells(2))
+  }
+
+  test("Artillery addition -- positive lance") {
+    val exampleHull = new Hull("Jerico"
+      , Transport
+      , 3
+      , -10
+      , 5
+      , 50
+      , 12
+      , 1
+      , 45
+      , 20
+      , createArtCells(List((Forward, 1), (LeftBoard, 1), (RightBoard, 1)))
+      , "Грузовое судно")
+
+    val lance = Lance("TestLance", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+    val boardGun = Battery("TestBoard", Set(Transport), 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
+    val regular = Battery("TestRegular", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+
+    assertResult(Right("OK")) (exampleHull.addArt(boardGun))
+    assertResult(Right("OK")) (exampleHull.addArt(lance))
+    assertResult(Right("OK")) (exampleHull.addArt(regular))
+    assertResult(ArtilleryCell(Forward, Some(lance)))(exampleHull.artilleryCells.head)
+    assertResult(ArtilleryCell(LeftBoard, Some(boardGun)))(exampleHull.artilleryCells(1))
+    assertResult(ArtilleryCell(RightBoard, Some(regular)))(exampleHull.artilleryCells(2))
+  }
 }
