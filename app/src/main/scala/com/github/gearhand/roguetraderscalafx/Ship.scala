@@ -5,7 +5,6 @@ import com.github.gearhand.roguetraderscalafx.ArtillerySlot.{Forward, LeftBoard,
 import com.github.gearhand.roguetraderscalafx.HullType.Transport
 import enumeratum._
 
-import scala.List
 class Ship ( var hull: Hull
            , var essentials: Set[Essential]
            , var supplementals: List[Supplemental]
@@ -13,10 +12,10 @@ class Ship ( var hull: Hull
 
 sealed trait Race extends EnumEntry
 object Race extends Enum[Race] {
-  val values = findValues
-  case object Imperium
-  case object Orkz
-  case object Aeldar
+  val values: IndexedSeq[Race] = findValues
+  case object Imperium extends Race
+  case object Orkz extends Race
+  case object Aeldar extends Race
 } // deriving (Show, Enum, Bounded)
 
 
@@ -55,7 +54,7 @@ object Functions {
   def generateEssentials (hull: Hull) (catalog: Catalog): List[EssentialVariant] = {
     val init: List[EssentialVariant] = List(Map.empty)
     catalog.foldLeft(init) { case (foobar, (_, essentials: List[Essential])) =>
-      dekartSpecific(foobar, essentials)
+      dekartSpecific(foobar, essentials.filter(_.hulls.contains(hull.hullType)))
     }
   }
 }

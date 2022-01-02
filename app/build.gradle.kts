@@ -19,6 +19,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType<ScalaCompile> {
+    scalaCompileOptions.additionalParameters = mutableListOf("-Ymacro-annotations")
+}
+
 dependencies {
     // Use Scala 2.13 in our library project
     implementation("org.scala-lang:scala-library:2.13.6")
@@ -28,6 +32,9 @@ dependencies {
 
     // For better enums (C++ waves a hand)
     implementation("com.beachape", "enumeratum_2.13", "1.7.0")
+
+    // Newtype pattern
+    implementation("io.estatico", "newtype_2.13", "0.4.4")
 
     implementation("net.jcazevedo",  "moultingyaml_2.13", "0.4.2")
 

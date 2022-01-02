@@ -1,25 +1,28 @@
 package com.github.gearhand.roguetraderscalafx
 
 import com.github.gearhand.roguetraderscalafx.HullType.{Frigate, Raider, Transport}
+import scala.Function
+import scala.Function0
+import scala.Function1
 import enumeratum._
 
 import scala.collection.mutable
 
-class Hull ( val hullName: String
-            , val hullType        : HullType
-            , val speed           : Int
-            , val maneuverability : Int
-            , val awareness       : Int
-            , val durability      : Int
-            , val armor           : Int
-            , val turretsClass    : Int
-            , val space           : Int
-            , val cost            : Int
-            , val artilleryCells  : mutable.Seq[ArtilleryCell]
-            , val traits          : String
-          )
-{
-  def addArt(component: Artillery) = {
+case class Hull(
+  hullName: String,
+  hullType: HullType,
+  speed: Int,
+  maneuverability: Int,
+  awareness: Int,
+  durability: Int,
+  armor: Int,
+  turretsClass: Int,
+  space: Int,
+  cost: Int,
+  artilleryCells: mutable.Seq[ArtilleryCell],
+  traits: String,
+) {
+  def addArt(component: Artillery): Either[String, String] = {
     val found = artilleryCells.find(arg => component.validateConstraint(hullType, arg.slot) && arg.cell.isEmpty)
     found match {
       case Some(value) =>
@@ -33,7 +36,7 @@ class Hull ( val hullName: String
 sealed trait HullType extends EnumEntry
 
 object HullType extends Enum[HullType] {
-  val values = findValues
+  val values: IndexedSeq[HullType] = findValues
 
   case object Any extends HullType
   case object Transport extends HullType
@@ -58,47 +61,37 @@ object ArtillerySlot extends Enum[ArtillerySlot] {
 }
 
 sealed trait Artillery extends EnumEntry {
-  val  name : String
-  val constraint : Set[HullType]
-  val power : Int
-  val space : Int
-  val cost  : Int
-  val damage   : String
-  val crit     : Int
-  val range    : Int
-  val slotConstraint: Option[Set[ArtillerySlot]]
+  val stats : ArtilleryStat
 
   def validateConstraint(hull: HullType, slot: ArtillerySlot): Boolean = {
-    slotConstraint.map( _.contains(slot) ).getOrElse(default = true) &&
-      constraint.contains(hull)
+    stats.slotConstraint.map( _.contains(slot) ).getOrElse(default = true) &&
+      stats.constraint.contains(hull)
   }
 }
 
 case class ArtilleryCell(slot: ArtillerySlot, var cell: Option[Artillery])
+case class ArtilleryStat(
+  name: String,
+  constraint: Set[HullType],
+  power: Int,
+  space: Int,
+  cost: Int,
+  damage: String,
+  crit: Int,
+  range: Int,
+  slotConstraint: Option[Set[ArtillerySlot]],
+)
 
 object Artillery extends Enum[Artillery] {
   val values = findValues
-  case class Battery ( name : String
-                 , constraint : Set[HullType]
-                 , power : Int
-                 , space : Int
-                 , cost  : Int
-                 , damage   : String
-                 , crit     : Int
-                 , range    : Int
-                 , slotConstraint: Option[Set[ArtillerySlot]]
-               ) extends Artillery
-  case class Lance ( name : String
-               , constraint : Set[HullType]
-               , power : Int
-               , space : Int
-               , cost  : Int
-               , damage   : String
-               , crit     : Int
-               , range    : Int
-               , slotConstraint: Option[Set[ArtillerySlot]]
-             ) extends Artillery
-  {
+
+  case class Battery(
+    stats: ArtilleryStat
+  ) extends Artillery
+
+  case class Lance(
+    stats: ArtilleryStat
+  ) extends Artillery {
     override def validateConstraint(hull: HullType, slot: ArtillerySlot): Boolean = {
       hull match  {
         case Transport | Raider | Frigate => slot == ArtillerySlot.Forward
@@ -110,6 +103,8 @@ object Artillery extends Enum[Artillery] {
       case (slot: ArtillerySlot, quantity: Int) => Array.fill(quantity) (ArtilleryCell(slot, None))
     }.toBuffer
 
+  def createBattery = ArtilleryStat.tupled andThen Battery
+  def createLance = ArtilleryStat.tupled andThen Lance
 
   // Какие вообще бывают ограничения на артиллерию? Есть ограничение компонента по корпусу,
   // есть ограничение для боковых батарей (только боковой слот) и есть ограничение для лэнсов

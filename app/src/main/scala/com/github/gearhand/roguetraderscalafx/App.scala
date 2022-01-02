@@ -3,9 +3,10 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
+import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.EssentialsCatalogFormat
 import net.jcazevedo.moultingyaml._
 
-import scala.collection.Map
+import scala.io.Source
 
 
 
@@ -13,6 +14,11 @@ object App {
   def main(args: Array[String]): Unit = {
     println(greeting())
 
+    println(System.getProperty("user.dir"))
+    val source = Source.fromFile("src/test/resources/components.yml", "utf-8")
+    val yamlAst = try
+      EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
+    finally source.close()
   }
 
   def greeting(): String = "Hello, world!"
