@@ -3,38 +3,27 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance, createArtCells, createBattery, createLance}
+import com.github.gearhand.roguetraderscalafx.Artillery.{createArtCells, createBattery, createLance}
 import com.github.gearhand.roguetraderscalafx.ArtillerySlot.{Forward, LeftBoard, RightBoard}
-import com.github.gearhand.roguetraderscalafx.EssentialCategory.Drive
 import com.github.gearhand.roguetraderscalafx.HullType.Transport
 import com.github.gearhand.roguetraderscalafx.MyYamlProtocol._
-import com.github.gearhand.roguetraderscalafx.Simple
 import net.jcazevedo.moultingyaml._
-import org.junit.Before
 import org.scalatest.funsuite.AnyFunSuite
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
-import org.yaml.snakeyaml.nodes.Tag
-import org.yaml.snakeyaml.{TypeDescription, Yaml}
 
 import scala.io._
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
 
 @RunWith(classOf[JUnitRunner])
 class AppSuite extends AnyFunSuite {
   def exampleHull = {
-    new Hull("Jerico"
-      , Transport
-      , 3
-      , -10
-      , 5
-      , 50
-      , 12
-      , 1
-      , 45
-      , 20
-      , createArtCells(List((Forward, 1), (LeftBoard, 1), (RightBoard, 1)))
-      , "Грузовое судно")
+    Hull(
+      "Jerico",
+      Transport,
+      3, -10, 5, 50, 12, 1, 45, 20,
+      createArtCells(List((Forward, 1), (LeftBoard, 1), (RightBoard, 1))),
+      "Грузовое судно"
+    )
    }
 
   test("App has a greeting") {
@@ -44,35 +33,15 @@ class AppSuite extends AnyFunSuite {
   test("Components deserialization") {
 
     println(System.getProperty("user.dir"))
-    val source = Source.fromFile("src/test/resources/test.yml", "utf-8")
-    val yamlAst = try
-      EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml).toMap
+    val source = Source.fromFile("src/main/resources/essentials.yml", "utf-8")
+    val catalog = try
+      EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
       finally source.close()
 
-    assert(yamlAst.get(Drive).map { list =>
-      val head = list.head
-      head.name.equals("Jovian Pattern Class 1 Drive") && head.hulls.contains(HullType.Transport)
-    }.get)
+    assert(catalog.drive.exists { x =>
+      x.stats.name.equals("Jovian Pattern Class 1 Drive") && x.stats.hulls.contains(HullType.Transport)
+    })
   }
-
-  //test("SnakeYaml deserialization with tags") {
-  //  println(System.getProperty("user.dir"))
-  //  //val source = Source.fromFile("src/test/resources/test.yml", "utf-8")
-  //  val source = Source.fromFile("src/test/resources/test_simple.yml", "utf-8")
-  //  val yaml = new Yaml()
-  //  val description = new TypeDescription(classOf[Simple], new Tag("!simple"))
-  //  //val description = new TypeDescription(Essential.getClass, new Tag("!essential"))
-  //  //val description = new TypeDescription(classOf[java.util.Map[String, java.util.Collection[Essential]]], new Tag("!essential"))
-  //  val input = source.getLines().mkString("\n")
-  //  yaml.addTypeDescription(description)
-  //  val result: Simple = yaml.load(input)
-  //  (result.first.asScala concat result.second.asScala).foreach(println)
-  //  /*val result: java.util.Map[String, java.util.Collection[Essential]] = yaml.load(input)
-  //  val scalaResult: Map[String, List[Essential]] = result.asScala.view.mapValues(_.asScala.toList).toMap
-  //  scalaResult("Drive").map(_.space).foreach(println(_))*/
-  //  //scalaResult.get("Drive").map(_.space).forEach(x => println(x))
-  //  source.close()
-  //}
 
   test("Artillery addition") {
 
@@ -104,8 +73,24 @@ class AppSuite extends AnyFunSuite {
     assertResult(ArtilleryCell(RightBoard, Some(regular)))(hull.artilleryCells(2))
   }
 
+  test("Set of artillery") {
+    val start: Set[Artillery] = Set(
+      createLance("TestLance", Set(Transport), 1, 1, 1, "1k10", 1, 1, None),
+      createBattery("TestBoard", Set(Transport), 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard))),
+    )
+    val updated = start.incl(
+      createBattery("TestRegular", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+    )
+    assert(updated.size == 3)
+  }
+
   test("Random 1") {
-    val ship = Algorithms.generate(exampleHull)
-    println(ship.hull.toYaml.prettyPrint)
+    println(System.getProperty("user.dir"))
+    val source = Source.fromFile("src/main/resources/essentials.yml", "utf-8")
+    val catalog = try
+      EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
+    finally source.close()
+    val ship = Algorithms.randomEssentialVector(exampleHull, catalog)
+    println(ship.toYaml.prettyPrint)
   }
 }

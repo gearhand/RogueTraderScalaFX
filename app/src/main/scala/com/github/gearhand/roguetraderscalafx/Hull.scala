@@ -34,7 +34,9 @@ sealed trait HullType extends EnumEntry
 object HullType extends Enum[HullType] {
   val values: IndexedSeq[HullType] = findValues
 
-  case object Any extends HullType
+  case object AnyHull extends HullType {
+    override def entryName: String = "Any"
+  }
   case object Transport extends HullType
   case object Raider extends HullType
   case object Frigate extends HullType

@@ -1,15 +1,14 @@
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.Functions.generateEssentials
-
-import scala.jdk.CollectionConverters.SeqHasAsJava
+import com.github.gearhand.roguetraderscalafx.Essential.EssentialSet
+import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.Catalog
 import scala.util.Random
 
-
-class Simple(var first: java.util.List[Int], var second: java.util.List[Int]) {
-  def this() = this(List.empty.asJava, List.empty.asJava)
-}
 object Algorithms {
+
+  implicit class PimpledSeq[A](toSeq: Seq[A]) {
+    def getRandom(): A = toSeq(random.nextInt(toSeq.length))
+  }
   // стратегия по умолчанию -- забивать все артиллерийские слоты, а потом уже добирать компоненты
   // вообще мы не можем набирать артиллерию без учёта энергии
   // другой вариант -- выбираем случайный вектор необходимых компонент, затем добираем
@@ -18,12 +17,30 @@ object Algorithms {
 
   def randomElement[A](seq: Seq[A]): A = seq(random.nextInt(seq.length))
 
-  def generate(hull: Hull) = new Ship(
+  def generate(hull: Hull, essentialCatalog: Catalog) = new Ship(
     hull,
-    randomElement(generateEssentials(hull) (Map.empty)).values.toSet,
+    Set.empty /*randomElement(generateEssentials(hull) (essentialCatalog)).values.toSet*/,
     List.empty
   )
   //def fillArtillery
   //def fillEssentials(hullType) = allEssentials.filter(hullType).
   //def fillSupplementals
+
+  def filterRandom[A <: Essential]: Hull => List[A] => A = (hull: Hull) => (list: List[A]) => {
+    list.filter(_.stats.hulls(hull.hullType)).getRandom()
+  }
+
+  def randomEssentialVector (hull: Hull, catalog: Catalog) = {
+    EssentialSet(
+      filterRandom (hull) (catalog.drive),
+      filterRandom (hull) (catalog.warpDrive),
+      filterRandom (hull) (catalog.gellarField),
+      filterRandom (hull) (catalog.voidShield),
+      filterRandom (hull) (catalog.bridge),
+      filterRandom (hull) (catalog.lifeSupport),
+      filterRandom (hull) (catalog.quarters),
+      filterRandom (hull) (catalog.sensors),
+    )
+  }
+
 }

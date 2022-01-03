@@ -1,13 +1,13 @@
 %YAML 1.2
 ---
 Drive:
-  - hull: !!set { Transport }
+  - hulls: !!set { Transport }
     power: 35
     space: 8
     name: "Jovian Pattern Class 1 Drive"
 
 WarpDrive:
-  - hull: !!set { Transport, Raider, Frigate }
+  - hulls: !!set { Transport, Raider, Frigate }
     power: 10
     space: 10
     name: "Strelov 1 Warp Engine"
