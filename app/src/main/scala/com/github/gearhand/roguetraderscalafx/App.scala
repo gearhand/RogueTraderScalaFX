@@ -15,7 +15,7 @@ object App {
     println(greeting())
 
     println(System.getProperty("user.dir"))
-    val source = Source.fromFile("src/test/resources/components.yml", "utf-8")
+    val source = Source.fromFile("src/test/resources/essentials.yml", "utf-8")
     val yamlAst = try
       EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
     finally source.close()

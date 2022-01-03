@@ -1,9 +1,5 @@
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.HullType.{Frigate, Raider, Transport}
-import scala.Function
-import scala.Function0
-import scala.Function1
 import enumeratum._
 
 import scala.collection.mutable
@@ -42,7 +38,9 @@ object HullType extends Enum[HullType] {
   case object Transport extends HullType
   case object Raider extends HullType
   case object Frigate extends HullType
-  case object LightCruiser extends HullType
+  case object LightCruiser extends HullType {
+    override def entryName: String = "Light Cruiser"
+  }
   case object Cruiser extends HullType
   case object GrandCruiser extends HullType // Battle Fleet Koronus hull type
   case object LinearCruiser extends HullType // Battle Fleet Koronus hull type
@@ -59,57 +57,3 @@ object ArtillerySlot extends Enum[ArtillerySlot] {
   case object Forward extends ArtillerySlot
   case object Kile extends ArtillerySlot
 }
-
-sealed trait Artillery extends EnumEntry {
-  val stats : ArtilleryStat
-
-  def validateConstraint(hull: HullType, slot: ArtillerySlot): Boolean = {
-    stats.slotConstraint.map( _.contains(slot) ).getOrElse(default = true) &&
-      stats.constraint.contains(hull)
-  }
-}
-
-case class ArtilleryCell(slot: ArtillerySlot, var cell: Option[Artillery])
-case class ArtilleryStat(
-  name: String,
-  constraint: Set[HullType],
-  power: Int,
-  space: Int,
-  cost: Int,
-  damage: String,
-  crit: Int,
-  range: Int,
-  slotConstraint: Option[Set[ArtillerySlot]],
-)
-
-object Artillery extends Enum[Artillery] {
-  val values = findValues
-
-  case class Battery(
-    stats: ArtilleryStat
-  ) extends Artillery
-
-  case class Lance(
-    stats: ArtilleryStat
-  ) extends Artillery {
-    override def validateConstraint(hull: HullType, slot: ArtillerySlot): Boolean = {
-      hull match  {
-        case Transport | Raider | Frigate => slot == ArtillerySlot.Forward
-        case _ => super.validateConstraint(hull, slot)
-      }
-    }
-  }
-  def createArtCells (slotList: Seq[(ArtillerySlot, Int)]): mutable.Seq[ArtilleryCell] = slotList.flatMap{
-      case (slot: ArtillerySlot, quantity: Int) => Array.fill(quantity) (ArtilleryCell(slot, None))
-    }.toBuffer
-
-  def createBattery = ArtilleryStat.tupled andThen Battery
-  def createLance = ArtilleryStat.tupled andThen Lance
-
-  // Какие вообще бывают ограничения на артиллерию? Есть ограничение компонента по корпусу,
-  // есть ограничение для боковых батарей (только боковой слот) и есть ограничение для лэнсов
-  // (только носовой слот для транспортов, фрегатов и рейдеров)
-}
-
-//createArtCells : [(ArtillerySlot, Natural)] -> ArtilleryCells
-//createArtCells = fromList . fmap (\(k,v) -> (k, array (1, v) $ fmap (, Nothing) [1..v]))

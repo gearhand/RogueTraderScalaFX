@@ -1,0 +1,169 @@
+%YAML 1.2
+---
+Drive:
+  - hull: !!set {Transport}
+    power: 35
+    space: 8
+    name: "Jovian Pattern Class 1 Drive"
+
+  - hull: !!set {Transport}
+    power: 40
+    space: 12
+    name: "Lathe Pattern Class 1 Drive"
+    price: 1
+
+  - hull: !!set {Raider, Frigate}
+    power: 45
+    space: 10
+    name: "Jovian Pattern Class 2 Drive"
+
+  - hull: !!set {Light Cruiser}
+    power: 60
+    space: 12
+    name: "Jovian Pattern Class 3 Drive"
+
+  - hull: !!set {Cruiser}
+    power: 75
+    space: 14
+    name: "Jovian Pattern Class 4 Drive"
+
+WarpDrive:
+  - hull: !!set {Transport, Raider, Frigate}
+    power: 10
+    space: 10
+    name: "Strelov 1 Warp Engine"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 12
+    space: 12
+    name: "Strelov 2 Warp Engine"
+
+GellarField:
+  - hull: !!set {Any}
+    power: 1
+    space: 0
+    name: "Gellar Field"
+
+  - hull: !!set {Any}
+    power: 1
+    space: 0
+    price: 2
+    name: "Warpsbane Hull"
+    traits: "Щит Веры"
+
+VoidShield:
+  - hull: !!set {Any}
+    power: 5
+    space: 1
+    name: "Одиночный пустотный щит"
+
+  - hull: !!set {Cruiser}
+    power: 5
+    space: 1
+    name: "Двойной пустотный щит"
+Bridge:
+  - hull: !!set {Transport, Raider, Frigate}
+    power: 1
+    space: 1
+    name: "Боевой мостик 1"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 2
+    space: 2
+    name: "Боевой мостик 2"
+
+  - hull: !!set {Raider, Frigate}
+    power: 2
+    space: 1
+    price: 1
+    name: "Командный мостик 1"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 3
+    space: 2
+    price: 1
+    name: "Командный мостик 2"
+
+  - hull: !!set {Transport}
+    power: 1
+    space: 1
+    name: "Торговый мостик"
+
+  - hull: !!set {Raider, Frigate}
+    power: 2
+    space: 2
+    name: "Бронированный командный мостик 1"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 3
+    space: 2
+    name: "Бронированный командный мостик 2"
+
+  - hull: !!set {Cruiser}
+    power: 4
+    space: 3
+    name: "Мостик хозяина корабля"
+
+LifeSupport:
+  - hull: !!set {Transport, Raider, Frigate}
+    power: 3
+    space: 1
+    name: "Mk 1.r"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 4
+    space: 2
+    name: "Mk 1.r"
+
+  - hull: !!set {Transport, Raider, Frigate}
+    power: 4
+    space: 2
+    name: "Схема Витэ"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 5
+    space: 3
+    name: "Схема Витэ"
+
+Quarters:
+  - hull: !!set {Transport, Raider, Frigate}
+    power: 1
+    space: 2
+    name: "Отсек насильно набранных"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 2
+    space: 3
+    name: "Отсек насильно набранных"
+
+  - hull: !!set {Transport, Raider, Frigate}
+    power: 1
+    space: 3
+    name: "Каюты пустотоходов"
+
+  - hull: !!set {Light Cruiser, Cruiser}
+    power: 2
+    space: 4
+    name: "Каюты пустотоходов"
+
+Sensors:
+  - hull: !!set {Any}
+    power: 3
+    space: 0
+    name: "Mk-100"
+
+  - hull: !!set {Any}
+    power: 5
+    space: 0
+    name: "Mk-201.b"
+
+  - hull: !!set {Any}
+    power: 4
+    space: 0
+    name: "R-50"
+
+  - hull: !!set {Any}
+    power: 7
+    space: 0
+    price: 1
+    name: "Комплекс глубокопустотных аугеров"
