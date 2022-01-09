@@ -1,4 +1,5 @@
 package com.github.gearhand.roguetraderscalafx
+import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance}
 import com.github.gearhand.roguetraderscalafx.Essential._
 import com.github.gearhand.roguetraderscalafx.HullType.AnyHull
 import net.jcazevedo.moultingyaml._
@@ -85,17 +86,24 @@ object MyYamlProtocol extends DefaultYamlProtocol {
   }
 
 
-  implicit val artStatFormat = yamlFormat9(ArtilleryStat)
+  implicit val artStatFormat = yamlFormat10(ArtilleryStat)
   implicit object Artillery extends YamlFormat[Artillery] {
 
     override def write(obj: Artillery): YamlValue = {
-      YamlArray(
-        YamlString(obj.entryName),
-        obj.stats.toYaml
-      )
+      val intermediate = obj.stats.toYaml.asYamlObject.fields +
+        (YamlString("type") -> YamlString(obj.entryName))
+      YamlObject(intermediate)
     }
 
-    override def read(yaml: YamlValue): Artillery = ???
+    override def read(yaml: YamlValue): Artillery = yaml match {
+      case YamlObject(fields) =>
+        fields(YamlString("type)")).convertTo[String] match {
+          case "Battery" => Battery(yaml.convertTo[ArtilleryStat])
+          case "Lance" => Lance(yaml.convertTo[ArtilleryStat])
+          case _ => deserializationError("Unknown artillery type!")
+        }
+      case _ => deserializationError("Expected yaml object")
+    }
   }
 
   implicit val artilleryCellFormat = yamlFormat2(ArtilleryCell)

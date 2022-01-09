@@ -21,16 +21,17 @@ sealed trait Artillery extends EnumEntry {
 
 case class ArtilleryCell(slot: ArtillerySlot, var cell: Option[Artillery])
 case class ArtilleryStat(
-                          name: String,
-                          constraint: Set[HullType],
-                          power: Int,
-                          space: Int,
-                          cost: Int,
-                          damage: String,
-                          crit: Int,
-                          range: Int,
-                          slotConstraint: Option[Set[ArtillerySlot]],
-                        )
+  name: String,
+  constraint: Set[HullType],
+  energy: Int,
+  space: Int,
+  cost: Int,
+  power: Int,
+  damage: String,
+  crit: Int,
+  range: Int,
+  slotConstraint: Option[Set[ArtillerySlot]],
+)
 
 object Artillery extends Enum[Artillery] {
   val values = findValues

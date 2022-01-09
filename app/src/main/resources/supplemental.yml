@@ -1,0 +1,175 @@
+- name: "Грузовые трюмы и лихтерные отсеки"
+  hulls: !!set { Raider, Frigate, Light Cruiser, Cruiser }
+  energy: 1
+  space: 2
+  cost: 1
+  traits: !!set { Скрытые места, Несбалансированный }
+
+- name: "Раздельный грузовой трюм"
+  hulls: !!set { Raider, Frigate, Light Cruiser, Cruiser }
+  energy: 2
+  space: 5
+  cost: 1
+  traits: !!set { Грузовая зона }
+
+- name: "Главный грузовой трюм"
+  hulls: !!set { Transport }
+  energy: 2
+  space: 4
+  cost: 1
+  traits: !!set { Сложено и защищено }
+
+- name: "Роскошные пассажирские покои"
+  hulls: null
+  energy: 2
+  space: 1
+  cost: 1
+  traits: !!set { Платящие клиенты, Классовые противоречия }
+
+- name: "Бараки"
+  energy: 2
+  space: 4
+  cost: 2
+  traits: !!set { Солдаты, Подкрепления }
+
+- name: "Улучшенные тормозные двигатели"
+  hulls: !!set { Raider, Frigate }
+  energy: 3
+  space: 0
+  cost: 2
+  traits: !!set { Ловкость, Внешний }
+
+- name: "Улучшенные тормозные двигатели"
+  hulls: !!set { Transport, Light Cruiser }
+  energy: 4
+  space: 0
+  cost: 2
+  traits: !!set { Ловкость, Внешний }
+
+- name: "Улучшенные тормозные двигатели"
+  hulls: !!set { Cruiser }
+  energy: 5
+  space: 0
+  cost: 2
+  traits: !!set { Ловкость, Внешний }
+
+- name: "Усиленные внутренние переборки"
+  hulls: !!set { Raider, Frigate, Transport }
+  energy: 0
+  space: 2
+  cost: 2
+  traits: !!set { Трудно пробить }
+
+- name: "Усиленные внутренние переборки"
+  hulls: !!set { Light Cruiser, Cruiser }
+  energy: 0
+  space: 3
+  cost: 2
+  traits: !!set { Трудно пробить }
+
+- name: "Бронированная обшивка"
+  unique: true
+  hulls: !!set { Transport, Raider, Frigate }
+  energy: 0
+  space: 1
+  cost: 2
+  traits: !!set { Броня, Перегруз }
+
+- name: "Бронированная обшивка"
+  unique: true
+  hulls: !!set { Light Cruiser, Cruiser }
+  energy: 0
+  space: 2
+  cost: 2
+  traits: !!set { Броня, Перегруз }
+
+- name: "Бронированный нос"
+  unique: true
+  hulls: !!set { Cruiser }
+  energy: 0
+  space: 4
+  cost: 2
+  traits: !!set { Грандиозный }
+
+- name: "Тенебро-лабиринт"
+  unique: true
+  hulls: !!set { Transport, Raider, Frigate }
+  energy: 1
+  space: 2
+  cost: 2
+  traits: !!set { Засады, Запутанная планировка }
+
+- name: "Тенебро-лабиринт"
+  unique: true
+  hulls: !!set { Light Cruiser, Cruiser }
+  energy: 2
+  space: 3
+  cost: 2
+  traits: !!set { Засады, Запутанная планировка }
+
+- name: "Увеличенные хранилища припасов"
+  unique: true
+  energy: 1
+  space: 4
+  cost: 2
+  traits: !!set { Большие склады, Хватит на всех }
+
+- name: "Комплекс утилизации команды"
+  unique: true
+  energy: 1
+  space: 1
+  cost: 1
+  traits: !!set { Переработка }
+
+- name: "Муниторум"
+  unique: true
+  hulls: !!set { Transport, Raider, Frigate }
+  energy: 2
+  space: 3
+  cost: 2
+  traits: !!set { Хорошо вооружён, Ординатус Экстремус, Неустойчивый }
+
+- name: "Муниторум"
+  unique: true
+  hulls: !!set { Light Cruiser, Cruiser }
+  energy: 3
+  space: 4
+  cost: 2
+  traits: !!set { Хорошо вооружён, Ординатус Экстремус, Неустойчивый }
+
+
+- name: "Храм-святилице Бога-Императора"
+  unique: true
+  energy: 1
+  space: 1
+  cost: 1
+  traits: !!set { Вдохновение, Благоговение перед Богом-Императором }
+
+- name: "Хранилище либрариума"
+  unique: true
+  energy: 1
+  space: 1
+  cost: 1
+  traits: !!set { Накопленные данные }
+
+- name: "Комната трофеев"
+  unique: true
+  energy: 1
+  space: 1
+  cost: 1
+  traits: !!set { Минувшие события }
+
+- name: "Купол обсервации"
+  unique: true
+  energy: 0
+  space: 1
+  cost: 1
+  traits: !!set { Выгравированные звёздные карты, Лекарство от клаустрофобии }
+
+- name: "Сервиторы-убийцы"
+  unique: true
+  energy: 1
+  space: 1
+  cost: 2
+  traits: !!set { Дельцы смерти, Точность }
+

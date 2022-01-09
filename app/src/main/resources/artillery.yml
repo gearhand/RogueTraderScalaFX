@@ -1,0 +1,110 @@
+%YAML 1.2
+---
+- name: Макроорудия "Удар грома"
+  type: Battery
+  constraint: null
+  energy: 2
+  space: 2
+  cost: 1
+  power: 3
+  damage: 1d10+1
+  crit: 6
+  range: 4
+  slotConstraint: null
+
+
+- name: Макроорудия системы Марса
+  type: Battery
+  constraint: null
+  energy: 4
+  space: 2
+  cost: 1
+  power: 3
+  damage: 1d10+2
+  crit: 5
+  range: 6
+  slotConstraint: null
+
+- name: Бортовые макроорудия системы Марса
+  type: Battery
+  constraint: !!set { Cruiser, Light Cruiser }
+  energy: 4
+  space: 5
+  cost: 1
+  power: 6
+  damage: 1d10+2
+  crit: 5
+  range: 6
+  slotConstraint: !!set { Left Board, Right Board }
+
+- name: '"Солнечный ожог"'
+  type: Battery
+  constraint: null
+  energy: 6
+  space: 4
+  cost: 1
+  power: 4
+  damage: 1d10+2
+  crit: 4
+  range: 9
+  slotConstraint: null
+
+- name: Плазменная батарея системы Ризы
+  type: Battery
+  constraint: null
+  energy: 8
+  space: 4
+  cost: 2
+  power: 4
+  damage: 1d10+4
+  crit: 4
+  range: 5
+  slotConstraint: null
+
+- name: '"Звездолом"'
+  type: Lance
+  constraint: null
+  energy: 6
+  space: 4
+  cost: 2
+  power: 1
+  damage: 1d10+2
+  crit: 3
+  range: 5
+  slotConstraint: null
+
+- name: '"Кузница титана"'
+  type: Lance
+  constraint: null
+  energy: 9
+  space: 4
+  cost: 2
+  power: 1
+  damage: 1d10+4
+  crit: 3
+  range: 6
+  slotConstraint: null
+
+- name: 'Лэнс-батарея "Кузница титана"'
+  type: Lance
+  constraint: !!set { Light Cruiser, Cruiser }
+  energy: 13
+  space: 6
+  cost: 2
+  power: 2
+  damage: 1d10+4
+  crit: 3
+  range: 6
+  slotConstraint: null
+
+- name: "Бронированный нос"
+  type: Unique
+  constraint: !!set { Cruiser }
+  energy: 0
+  space: 4
+  cost: 2
+  power: 0
+  damage: Дополнительные 1d10 урона при таране
+  crit: 0
+  range: 0
+  slotConstraint: !!set { Forward }
