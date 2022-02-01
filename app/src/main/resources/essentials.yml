@@ -39,12 +39,12 @@ WarpDrive:
     name: "Strelov 2 Warp Engine"
 
 GellarField:
-  - hulls: !!set {Any}
+  - hulls:
     power: 1
     space: 0
     name: "Gellar Field"
 
-  - hulls: !!set {Any}
+  - hulls:
     power: 1
     space: 0
     price: 2
@@ -52,7 +52,7 @@ GellarField:
     traits: "Щит Веры"
 
 VoidShield:
-  - hulls: !!set {Any}
+  - hulls:
     power: 5
     space: 1
     name: "Одиночный пустотный щит"
@@ -147,22 +147,22 @@ Quarters:
     name: "Каюты пустотоходов"
 
 Sensors:
-  - hulls: !!set {Any}
+  - hulls:
     power: 3
     space: 0
     name: "Mk-100"
 
-  - hulls: !!set {Any}
+  - hulls:
     power: 5
     space: 0
     name: "Mk-201.b"
 
-  - hulls: !!set {Any}
+  - hulls:
     power: 4
     space: 0
     name: "R-50"
 
-  - hulls: !!set {Any}
+  - hulls:
     power: 7
     space: 0
     price: 1

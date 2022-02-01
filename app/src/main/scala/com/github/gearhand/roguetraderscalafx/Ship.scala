@@ -21,7 +21,17 @@ object Race extends Enum[Race] {
 } // deriving (Show, Enum, Bounded)
 
 
-case class Supplemental (hulls: Set[HullType], power: Int, space: Int, cost: Int, name: String, traits: Option[String])
+case class Supplemental (
+  hulls: Set[HullType],
+  unique: Option[Boolean],
+  energy: Int,
+  space: Int,
+  cost: Int,
+  name: String,
+  traits: Set[String]
+) {
+  def score: (Int, Int, Int) = (energy, space, cost)
+}
 
 object Examples {
   // "Jerico" pilgrim vessel

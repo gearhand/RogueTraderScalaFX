@@ -15,7 +15,7 @@ case class Hull(
   turretsClass: Int,
   space: Int,
   cost: Int,
-  artilleryCells: mutable.Seq[ArtilleryCell],
+  artilleryCells: mutable.IndexedSeq[ArtilleryCell],
   traits: String,
 ) {
   def addArt(component: Artillery): Either[String, String] = {

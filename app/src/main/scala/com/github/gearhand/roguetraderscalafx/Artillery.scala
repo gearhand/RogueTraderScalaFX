@@ -5,6 +5,7 @@ import com.github.gearhand.roguetraderscalafx.HullType.{Frigate, Raider, Transpo
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.mutable
+import scala.collection.mutable.IndexedSeq
 
 
 sealed trait Artillery extends EnumEntry {
@@ -17,6 +18,8 @@ sealed trait Artillery extends EnumEntry {
     stats.slotConstraint.map( _.contains(slot) ).getOrElse(default = true) &&
       stats.constraint.contains(hull)
   }
+
+  def score: (Int, Int, Int) = (stats.power, stats.space, stats.cost)
 }
 
 case class ArtilleryCell(slot: ArtillerySlot, var cell: Option[Artillery])
@@ -50,11 +53,17 @@ object Artillery extends Enum[Artillery] {
       }
     }
   }
-  def createArtCells (slotList: Seq[(ArtillerySlot, Int)]): mutable.Seq[ArtilleryCell] = slotList.flatMap{
-    case (slot: ArtillerySlot, quantity: Int) => Array.fill(quantity) (ArtilleryCell(slot, None))
-  }.toBuffer
+  case class Unique(
+    stats: ArtilleryStat
+  ) extends Artillery
 
-  def createBattery = ArtilleryStat.tupled andThen Battery
-  def createLance = ArtilleryStat.tupled andThen Lance
+  def createArtCells (slotList: Seq[(ArtillerySlot, Int)]): mutable.IndexedSeq[ArtilleryCell] = {
+    mutable.IndexedSeq.from(slotList).flatMap{
+      case (slot: ArtillerySlot, quantity: Int) => Array.fill(quantity) (ArtilleryCell(slot, None))
+    }
+  }
+
+  def createBattery: ((String, Set[HullType], Int, Int, Int, Int, String, Int, Int, Option[Set[ArtillerySlot]])) => Battery = ArtilleryStat.tupled andThen Battery
+  def createLance: ((String, Set[HullType], Int, Int, Int, Int, String, Int, Int, Option[Set[ArtillerySlot]])) => Lance = ArtilleryStat.tupled andThen Lance
 
 }

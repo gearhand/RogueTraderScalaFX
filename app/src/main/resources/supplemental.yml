@@ -20,13 +20,14 @@
   traits: !!set { Сложено и защищено }
 
 - name: "Роскошные пассажирские покои"
-  hulls: null
+  hulls:
   energy: 2
   space: 1
   cost: 1
   traits: !!set { Платящие клиенты, Классовые противоречия }
 
 - name: "Бараки"
+  hulls:
   energy: 2
   space: 4
   cost: 2
@@ -109,6 +110,7 @@
 
 - name: "Увеличенные хранилища припасов"
   unique: true
+  hulls:
   energy: 1
   space: 4
   cost: 2
@@ -116,6 +118,7 @@
 
 - name: "Комплекс утилизации команды"
   unique: true
+  hulls:
   energy: 1
   space: 1
   cost: 1
@@ -140,6 +143,7 @@
 
 - name: "Храм-святилице Бога-Императора"
   unique: true
+  hulls:
   energy: 1
   space: 1
   cost: 1
@@ -147,6 +151,7 @@
 
 - name: "Хранилище либрариума"
   unique: true
+  hulls:
   energy: 1
   space: 1
   cost: 1
@@ -154,6 +159,7 @@
 
 - name: "Комната трофеев"
   unique: true
+  hulls:
   energy: 1
   space: 1
   cost: 1
@@ -161,6 +167,7 @@
 
 - name: "Купол обсервации"
   unique: true
+  hulls:
   energy: 0
   space: 1
   cost: 1
@@ -168,6 +175,7 @@
 
 - name: "Сервиторы-убийцы"
   unique: true
+  hulls:
   energy: 1
   space: 1
   cost: 2

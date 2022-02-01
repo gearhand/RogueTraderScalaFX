@@ -11,12 +11,13 @@ import net.jcazevedo.moultingyaml._
 import org.scalatest.funsuite.AnyFunSuite
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
+import com.github.gearhand.roguetraderscalafx.Algorithms.Int3
 
 import scala.io._
 
 @RunWith(classOf[JUnitRunner])
 class AppSuite extends AnyFunSuite {
-  def exampleHull = {
+  def exampleHull: Hull = {
     Hull(
       "Jerico",
       Transport,
@@ -46,9 +47,9 @@ class AppSuite extends AnyFunSuite {
   test("Artillery addition") {
 
     val hull = exampleHull
-    val lance = createLance("TestLance", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
-    val boardGun = createBattery("TestBoard", Set(Transport), 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
-    val regular = createBattery("TestRegular", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+    val lance = createLance("TestLance", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
+    val boardGun = createBattery("TestBoard", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
+    val regular = createBattery("TestRegular", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
 
     assertResult(Right("OK")) (hull.addArt(boardGun))
     assertResult(Right("OK")) (hull.addArt(regular))
@@ -61,9 +62,9 @@ class AppSuite extends AnyFunSuite {
   test("Artillery addition -- positive lance") {
 
     val hull = exampleHull
-    val lance = createLance("TestLance", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
-    val boardGun = createBattery("TestBoard", Set(Transport), 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
-    val regular = createBattery("TestRegular", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+    val lance = createLance("TestLance", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
+    val boardGun = createBattery("TestBoard", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
+    val regular = createBattery("TestRegular", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
 
     assertResult(Right("OK")) (hull.addArt(boardGun))
     assertResult(Right("OK")) (hull.addArt(lance))
@@ -75,11 +76,11 @@ class AppSuite extends AnyFunSuite {
 
   test("Set of artillery") {
     val start: Set[Artillery] = Set(
-      createLance("TestLance", Set(Transport), 1, 1, 1, "1k10", 1, 1, None),
-      createBattery("TestBoard", Set(Transport), 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard))),
+      createLance("TestLance", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None),
+      createBattery("TestBoard", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard))),
     )
     val updated = start.incl(
-      createBattery("TestRegular", Set(Transport), 1, 1, 1, "1k10", 1, 1, None)
+      createBattery("TestRegular", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
     )
     assert(updated.size == 3)
   }
@@ -90,7 +91,31 @@ class AppSuite extends AnyFunSuite {
     val catalog = try
       EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
     finally source.close()
-    val ship = Algorithms.randomEssentialVector(exampleHull, catalog)
+    val ship = Algorithms.randomEssentialVector(exampleHull.hullType, catalog)
     println(ship.toYaml.prettyPrint)
+  }
+
+  test("Artillery addition via function") {
+    val hull = exampleHull
+    val lance = createLance("TestLance", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
+    val boardGun = createBattery("TestBoard", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, Some(Set(LeftBoard, RightBoard)))
+    val regular = createBattery("TestRegular", Set(Transport), 1, 1, 1, 1, "1k10", 1, 1, None)
+    val catalog = List(lance, boardGun, regular)
+
+    Algorithms.fillArtillery(hull, catalog)
+    println(hull.toYaml.prettyPrint)
+
+  }
+
+  test("Limited supplementals") {
+    val hull = exampleHull
+    val source = Source.fromFile("src/main/resources/supplemental.yml", "utf-8")
+    val catalog = try
+      seqFormat[Supplemental].read(source.getLines().mkString("\n").parseYaml)
+    finally source.close()
+
+    val supp = Algorithms.fillSupplementals((5,5,5), Transport, catalog.toSeq)
+    println("Total cost: " + supp.map(_.score).reduce(_ + _))
+    println(supp.toIndexedSeq.toYaml.prettyPrint)
   }
 }

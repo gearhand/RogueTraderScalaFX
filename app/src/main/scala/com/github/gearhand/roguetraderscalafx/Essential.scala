@@ -1,6 +1,7 @@
 package com.github.gearhand.roguetraderscalafx
 
 import enumeratum._
+import Algorithms.Int3
 
 case class EssentialStats(
   hulls: Set[HullType],
@@ -13,6 +14,8 @@ case class EssentialStats(
 
 sealed trait Essential extends EnumEntry {
   val stats: EssentialStats
+
+  def score: (Int, Int, Int) = (stats.power, stats.space, stats.price.getOrElse(0))
 }
 
 object Essential extends Enum[Essential] {
@@ -35,6 +38,18 @@ object Essential extends Enum[Essential] {
     lifeSupport: LifeSupport,
     quarters: Quarters,
     sensors: Sensors
-  )
+  ) {
+    def score: (Int, Int, Int) = {
+      drive.score - (
+        warpDrive.score +
+        gellarField.score +
+        voidShield.score +
+        bridge.score +
+        lifeSupport.score +
+        quarters.score +
+        sensors.score
+      )
+    }
+  }
 }
 

@@ -1,5 +1,5 @@
 package com.github.gearhand.roguetraderscalafx
-import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance}
+import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance, Unique}
 import com.github.gearhand.roguetraderscalafx.Essential._
 import com.github.gearhand.roguetraderscalafx.HullType.AnyHull
 import net.jcazevedo.moultingyaml._
@@ -31,9 +31,8 @@ object MyYamlProtocol extends DefaultYamlProtocol {
     def write(set: Set[HullType]) = YamlSet(set.map(_.toYaml))
     def read(value: YamlValue): Set[HullType] = value match {
       case YamlSet(elements) =>
-        val converted = elements.map(_.convertTo[HullType])
-        if (!converted.contains(AnyHull)) converted
-        else Set.from(HullType.values).excl(AnyHull)
+        elements.map(_.convertTo[HullType])
+      case YamlNull => Set.from(HullType.values).excl(AnyHull)
       case x =>
         deserializationError("Expected Set as YamlSet, but got " + x)
     }
@@ -100,6 +99,7 @@ object MyYamlProtocol extends DefaultYamlProtocol {
         fields(YamlString("type)")).convertTo[String] match {
           case "Battery" => Battery(yaml.convertTo[ArtilleryStat])
           case "Lance" => Lance(yaml.convertTo[ArtilleryStat])
+          case "Unique" => Unique(yaml.convertTo[ArtilleryStat])
           case _ => deserializationError("Unknown artillery type!")
         }
       case _ => deserializationError("Expected yaml object")
@@ -107,18 +107,18 @@ object MyYamlProtocol extends DefaultYamlProtocol {
   }
 
   implicit val artilleryCellFormat = yamlFormat2(ArtilleryCell)
-  implicit val artCellSeqFormat = new MutableSeqFormat[ArtilleryCell]
+  implicit val artCellSeqFormat = new MutableISeqFormat[ArtilleryCell]
   implicit val hullFormat = yamlFormat12(Hull)
 
-  class MutableSeqFormat[A: YamlFormat] extends YamlFormat[mutable.Seq[A]] {
+  class MutableISeqFormat[A: YamlFormat] extends YamlFormat[mutable.IndexedSeq[A]] {
 
-    override def read(yaml: YamlValue): mutable.Seq[A] = ???
+    override def read(yaml: YamlValue): mutable.IndexedSeq[A] = ???
 
-    override def write(obj: mutable.Seq[A]): YamlValue = obj.toSeq.toYaml
+    override def write(obj: mutable.IndexedSeq[A]): YamlValue = obj.toSeq.toYaml
   }
 
 
-  implicit val supplementalFormat = yamlFormat6(Supplemental)
+  implicit val supplementalFormat = yamlFormat7(Supplemental)
 
   implicit object ShipFormat extends YamlFormat[Ship] {
     override def read(yaml: YamlValue): Ship = ???
