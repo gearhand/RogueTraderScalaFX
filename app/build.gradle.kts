@@ -30,6 +30,10 @@ dependencies {
     // This dependency is used by the application.
     implementation("com.google.guava:guava:30.1-jre")
 
+    // Functional programming
+    implementation("org.typelevel", "cats-core_2.13", "2.3.0")
+    implementation("org.typelevel", "cats-laws_2.13", "2.3.0")
+
     // For better enums (C++ waves a hand)
     implementation("com.beachape", "enumeratum_2.13", "1.7.0")
 

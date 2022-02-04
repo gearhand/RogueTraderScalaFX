@@ -2,13 +2,14 @@ package com.github.gearhand.roguetraderscalafx
 
 import com.github.gearhand.roguetraderscalafx.Artillery.createArtCells
 import com.github.gearhand.roguetraderscalafx.ArtillerySlot.{Forward, LeftBoard, RightBoard}
+import com.github.gearhand.roguetraderscalafx.Essential.EssentialSet
 import com.github.gearhand.roguetraderscalafx.HullType.Transport
 import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.Catalog
 import enumeratum._
 
 class Ship(
   var hull: Hull,
-  var essentials: Set[EssentialStats],
+  var essentials: EssentialSet,
   var supplementals: List[Supplemental],
 )
 

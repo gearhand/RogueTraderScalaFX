@@ -114,8 +114,26 @@ class AppSuite extends AnyFunSuite {
       seqFormat[Supplemental].read(source.getLines().mkString("\n").parseYaml)
     finally source.close()
 
-    val supp = Algorithms.fillSupplementals((5,5,5), Transport, catalog.toSeq)
-    println("Total cost: " + supp.map(_.score).reduce(_ + _))
+    val limit = (5,5,5)
+    val supp = Algorithms.fillSupplementals(limit, catalog.toSeq.filter(_.hulls.contains(Transport)))
+    val totalCost = supp.map(_.score).reduce(_ + _)
+    println("Total cost: " + totalCost)
     println(supp.toIndexedSeq.toYaml.prettyPrint)
+    assert(!catalog.exists(it => (limit - it.score - totalCost).allPositive))
+  }
+
+  test("Limited supplementals recursive impl") {
+    val hull = exampleHull
+    val source = Source.fromFile("src/main/resources/supplemental.yml", "utf-8")
+    val catalog = try
+      seqFormat[Supplemental].read(source.getLines().mkString("\n").parseYaml)
+    finally source.close()
+
+    val limit = (5,5,5)
+    val supp = Algorithms.fillSupplementals2(limit, catalog.toSeq.filter(_.hulls.contains(Transport)))
+    val totalCost = supp.map(_.score).reduce(_ + _)
+    println("Total cost: " + totalCost)
+    println(supp.toIndexedSeq.toYaml.prettyPrint)
+    assert(!catalog.exists(it => (limit - it.score - totalCost).allPositive))
   }
 }
