@@ -57,6 +57,7 @@ object MyYamlProtocol extends DefaultYamlProtocol {
   implicit val quartersFormat = new EssentialFormat[Quarters]
   implicit val sensorsFormat = new EssentialFormat[Sensors]
   implicit val essentialSetFormat = yamlFormat8(EssentialSet)
+  implicit val driveListFormat = listFormat(driveFormat)
 
   implicit object EssentialsCatalogFormat extends YamlFormat[Catalog] {
 

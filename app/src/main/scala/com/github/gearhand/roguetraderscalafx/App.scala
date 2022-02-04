@@ -3,23 +3,43 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.EssentialsCatalogFormat
+import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.{EssentialsCatalogFormat, driveListFormat}
 import net.jcazevedo.moultingyaml._
+import net.jcazevedo.moultingyaml.CollectionFormats
 
 import scala.io.Source
+import scalafx.application.JFXApp3
+import scalafx.geometry.Insets
+import scalafx.scene.Scene
+import scalafx.scene.control.Label
+import scalafx.scene.layout.BorderPane
 
+object App extends JFXApp3 {
+  //def main(args: Array[String]): Unit = {
+  //  println(greeting())
 
-
-object App {
-  def main(args: Array[String]): Unit = {
-    println(greeting())
-
-    println(System.getProperty("user.dir"))
-    val source = Source.fromFile("src/test/resources/essentials.yml", "utf-8")
-    val yamlAst = try
-      EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
-    finally source.close()
-  }
+  //  println(System.getProperty("user.dir"))
+  //  val source = Source.fromFile("src/test/resources/essentials.yml", "utf-8")
+  //  val yamlAst = try
+  //    EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
+  //  finally source.close()
+  //}
 
   def greeting(): String = "Hello, world!"
+
+  override def start(): Unit = {
+    stage = new JFXApp3.PrimaryStage {
+      scene = new Scene {
+        root = new BorderPane {
+          padding = Insets(25)
+          val source = Source.fromFile("app/src/main/resources/essentials.yml", "utf-8")
+          val yamlAst = try
+            EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
+          finally source.close()
+          //center = new Label("Hello SBT")
+          center = new Label(yamlAst.drive.toYaml(driveListFormat).prettyPrint)
+        }
+      }
+    }
+  }
 }

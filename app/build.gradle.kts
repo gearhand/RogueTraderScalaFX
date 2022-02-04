@@ -34,6 +34,19 @@ dependencies {
     implementation("org.typelevel", "cats-core_2.13", "2.3.0")
     implementation("org.typelevel", "cats-laws_2.13", "2.3.0")
 
+    // FX
+    implementation("org.scalafx", "scalafx_2.13", "17.0.1-R26")
+
+    val javafxModules = listOf("base", "controls", "fxml", "graphics", "media", "swing", "web")
+    val name = System.getProperty("os.name")
+    val osName = when {
+        name.startsWith("Linux") -> "linux"
+        name.startsWith("Mac") -> "mac"
+        name.startsWith("Windows") -> "win"
+        else -> throw Exception("Unknown platform!")
+    }
+    javafxModules.forEach { m -> implementation("org.openjfx", "javafx-$m", "17.0.1", classifier = osName) }
+
     // For better enums (C++ waves a hand)
     implementation("com.beachape", "enumeratum_2.13", "1.7.0")
 
