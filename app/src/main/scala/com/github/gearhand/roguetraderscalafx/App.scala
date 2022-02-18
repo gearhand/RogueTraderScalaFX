@@ -3,17 +3,28 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.{EssentialsCatalogFormat, driveListFormat}
+import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.{ArtilleryCellStructure, EssentialsCatalogFormat, RaceFormat, driveListFormat, hullFormat, immSeqFormat, mapFormat}
+import com.github.gearhand.roguetraderscalafx.Race.Imperium
 import net.jcazevedo.moultingyaml._
-import net.jcazevedo.moultingyaml.CollectionFormats
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 import scalafx.application.JFXApp3
+import scalafx.beans.property.IntegerProperty
+import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
+import scalafx.geometry.Pos.Center
 import scalafx.scene.Scene
-import scalafx.scene.control.Label
-import scalafx.scene.layout.BorderPane
+import scalafx.scene.control.{Button, ChoiceBox, Label, TextField}
+import scalafx.scene.layout.{BorderPane, GridPane, HBox, VBox}
 
+import scala.io.Source.fromInputStream
+
+/**
+ * План приложения:
+ * выберите расу, корпус и введите доступные очки корабля →
+ * сгенерить корабль, кастомизировать.
+ * Где-нибудь в начале или в верхней менюшке в меню настроек сделать выбор пресета
+ */
 object App extends JFXApp3 {
   //def main(args: Array[String]): Unit = {
   //  println(greeting())
@@ -29,17 +40,94 @@ object App extends JFXApp3 {
 
   override def start(): Unit = {
     stage = new JFXApp3.PrimaryStage {
+
+      //val firstScene = new VBox(
+      //  1.0, raceChoice, hullChoice, shipPointsField, advancedButton
+      //)
+      implicit val codec = Codec.UTF8
+      val hullsCatalog = mapFormat(RaceFormat, immSeqFormat(hullFormat(ArtilleryCellStructure)))
+        .read(fromInputStream(getClass.getResourceAsStream("/hulls.yml")).mkString.parseYaml)
+      val artCatalog = fromInputStream(getClass.getResourceAsStream("/artillery.yml"))
+        .mkString.parseYaml
+      val essentialsCatalog = fromInputStream(getClass.getResourceAsStream("/essentials.yml"))
+        .mkString.parseYaml
+      val supplementalsCatalog = fromInputStream(getClass.getResourceAsStream("/supplemental.yml"))
+        .mkString.parseYaml
+
       scene = new Scene {
+        val raceChoice = new ChoiceBox(ObservableBuffer.from(Race.values)) {
+          value = Race.Imperium
+        }
+        val hullChoice = new ChoiceBox(ObservableBuffer.from(HullType.values)) {
+          value = HullType.Transport
+        }
+        val shipPoints = new TextField { maxWidth = 30; alignment = Center }
+
+
+        val advancedButton = new Button("Advanced options")
+
+        val inputGrid = new GridPane {
+          add(new Label("Выбор расы:"), 0,0)
+          add(
+            raceChoice, 1,0)
+          add(new Label("Выбор корпуса:"), 0,1)
+          add(
+            hullChoice, 1,1)
+          add(new Label("Очки корабля:"), 0,2)
+          add(shipPoints, 1,2)
+          add(advancedButton, 0, 3, 2, 1)
+        }
+
+        val genButton = new Button("Generate") {
+          onAction = _ => {
+            Algorithms.generate(
+              hullChoice.getValue,
+              shipPoints.getText.toInt, // TODO: Needs error handling!
+              hullsCatalog(Imperium),
+              null,
+              null,
+              null,
+              null
+            )
+          }
+        }
+
         root = new BorderPane {
-          padding = Insets(25)
-          val source = Source.fromFile("app/src/main/resources/essentials.yml", "utf-8")
-          val yamlAst = try
-            EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
-          finally source.close()
-          //center = new Label("Hello SBT")
-          center = new Label(yamlAst.drive.toYaml(driveListFormat).prettyPrint)
+          center = inputGrid
+          right = new BorderPane { bottom = genButton; padding = Insets(2); }
         }
       }
+    }
+  }
+
+  def example = new BorderPane {
+    padding = Insets(25)
+    val source = Source.fromFile("app/src/main/resources/essentials.yml", "utf-8")
+    val yamlAst = try
+      EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
+    finally source.close()
+    //center = new Label("Hello SBT")
+    center = new Label(yamlAst.drive.toYaml(driveListFormat).prettyPrint)
+
+    // Property
+    val speed: IntegerProperty = IntegerProperty(0)
+    speed.onChange { (source, old, new_val) =>
+      println(s"Value of property '$source.name' is changing from $old to $new_val")
+    }
+    speed.value = 10
+  }
+
+
+
+  def foo = {
+    new BorderPane {
+      padding = Insets(25)
+      val source = Source.fromFile("app/src/main/resources/essentials.yml", "utf-8")
+      val yamlAst = try
+        EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
+      finally source.close()
+      //center = new Label("Hello SBT")
+      center = new Label(yamlAst.drive.toYaml(driveListFormat).prettyPrint)
     }
   }
 }

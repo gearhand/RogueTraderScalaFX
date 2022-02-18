@@ -25,53 +25,34 @@ object Algorithms {
 
     def allPositive: Boolean = tuple3._1 > 0 && tuple3._2 > 0 && tuple3._3 > 0
   }
+
+  type Score = (Int, Int, Int)
   // стратегия по умолчанию -- забивать все артиллерийские слоты, а потом уже добирать компоненты
   // вообще мы не можем набирать артиллерию без учёта энергии
   // другой вариант -- выбираем случайный вектор необходимых компонент, затем добираем
   // артиллерию с учётом энергии, и затем случайным образом добираем доп. компоненты
   val random: Random = new Random
 
-  def foo(
-    hull: Hull,
-    limits: (Int, Int, Int),
+  def generate(
+    hullType: HullType,
+    points: Int,
+    hulls: Seq[Hull],
     essentialCatalog: Catalog,
     artilleryCatalog: Seq[Artillery],
     supplementalPool: Seq[Supplemental],
     randomizer: Random
-  ) = {
-    type Score = (Int, Int, Int)
-    val essentials: State[Score, EssentialSet] = State { _ =>
-      val vec = randomEssentialVector(hull.hullType, essentialCatalog)
-      (vec.score, vec)
-    }
-    val armedHull: State[Score, Hull] = State { score =>
-      fillArtillery(hull, artilleryCatalog)
-      val artScore = hull.artilleryCells.map(_.cell.get.score).fold (score) (_ + _)
-      (artScore, hull)
-    }
-    val supplementals: State[Score, ArrayBuffer[Supplemental]] = State { score =>
-      val vec = fillSupplementals(limits - score, supplementalPool)
-      val totalScore = vec.map(_.score).fold (score) (_ + _)
-      (totalScore, vec)
-    }
-    val generator = essentials.flatMap { ess =>
-      armedHull.flatMap { a_hull =>
-        supplementals.map { supp =>
-          new Ship(a_hull, ess, supp.toList)
-        }
-      }
-    }
+  ): Ship = {
+    val hull = randomElement(hulls)
+    val limits = (0, hull.space, points - hull.cost)
+    val generator = for {
+      ess <- generateEssentials(hullType, essentialCatalog)
+      a_hull <- generateArtillery(hull, artilleryCatalog)
+      supp <- generateSupplementals(limits, supplementalPool)
+    } yield new Ship(a_hull, ess, supp.toList)
     generator.runA((0,0,0)).value
   }
 
   def randomElement[A](seq: Seq[A]): A = seq(random.nextInt(seq.length))
-
-  def generate(hull: Hull, essentialCatalog: Catalog, artilleryCatalog: Seq[Artillery]) = {
-    val essentials = randomEssentialVector(hull.hullType, essentialCatalog)
-    val essentialScore = essentials.score
-    fillArtillery(hull, artilleryCatalog)
-    val artScore = hull.artilleryCells.map(_.cell.get.score).fold (0,0,0) (_ + _)
-  }
 
   def fillArtillery(hull: Hull, artilleryCatalog: Seq[Artillery]): Unit = {
     val filtered = artilleryCatalog.filter(_.stats.constraint.contains(hull.hullType))
@@ -158,6 +139,23 @@ object Algorithms {
       _filterRandom (catalog.quarters),
       _filterRandom (catalog.sensors),
     )
+  }
+
+  private def generateEssentials (hullType: HullType, catalog: Catalog) = State { _ : Score =>
+    val vec = randomEssentialVector(hullType, catalog)
+    (vec.score, vec)
+  }
+
+  private def generateArtillery (hull: Hull, artilleryCatalog: Seq[Artillery]) = State { score: Score =>
+    fillArtillery(hull, artilleryCatalog)
+    val artScore = hull.artilleryCells.map(_.cell.get.score).fold (score) (_ + _)
+    (artScore, hull)
+  }
+
+  private def generateSupplementals(limits: (Int, Int, Int), pool: Seq[Supplemental]) = State { score: Score =>
+    val vec = fillSupplementals(limits - score, pool)
+    val totalScore = vec.map(_.score).fold (score) (_ + _)
+    (totalScore, vec)
   }
 
 }

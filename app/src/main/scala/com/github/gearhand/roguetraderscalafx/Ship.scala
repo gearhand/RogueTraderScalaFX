@@ -4,7 +4,6 @@ import com.github.gearhand.roguetraderscalafx.Artillery.createArtCells
 import com.github.gearhand.roguetraderscalafx.ArtillerySlot.{Forward, LeftBoard, RightBoard}
 import com.github.gearhand.roguetraderscalafx.Essential.EssentialSet
 import com.github.gearhand.roguetraderscalafx.HullType.Transport
-import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.Catalog
 import enumeratum._
 
 class Ship(
@@ -19,7 +18,7 @@ object Race extends Enum[Race] {
   case object Imperium extends Race
   case object Orkz extends Race
   case object Aeldar extends Race
-} // deriving (Show, Enum, Bounded)
+}
 
 
 case class Supplemental (

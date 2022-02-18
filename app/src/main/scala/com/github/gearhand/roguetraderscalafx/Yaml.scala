@@ -1,10 +1,9 @@
 package com.github.gearhand.roguetraderscalafx
-import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance, Unique}
+import com.github.gearhand.roguetraderscalafx.Artillery.{Battery, Lance, Unique, createArtCells}
 import com.github.gearhand.roguetraderscalafx.Essential._
-import com.github.gearhand.roguetraderscalafx.HullType.AnyHull
 import net.jcazevedo.moultingyaml._
 
-import scala.collection.mutable
+import scala.collection.{Iterable, mutable}
 
 object MyYamlProtocol extends DefaultYamlProtocol {
   case class Catalog(
@@ -27,12 +26,21 @@ object MyYamlProtocol extends DefaultYamlProtocol {
     override def write(obj: HullType): YamlValue = YamlString(obj.entryName)
   }
 
+  implicit object RaceFormat extends YamlFormat[Race] {
+    override def read(yaml: YamlValue): Race = yaml match {
+      case YamlString(value) => Race.withName(value)
+      case _ => deserializationError("Race type deserialization failure")
+    }
+
+    override def write(obj: Race): YamlValue = ???
+  }
+
   implicit object HullTypeSetFormat extends YamlFormat[Set[HullType]] {
     def write(set: Set[HullType]) = YamlSet(set.map(_.toYaml))
     def read(value: YamlValue): Set[HullType] = value match {
       case YamlSet(elements) =>
         elements.map(_.convertTo[HullType])
-      case YamlNull => Set.from(HullType.values).excl(AnyHull)
+      case YamlNull => Set.from(HullType.values)
       case x =>
         deserializationError("Expected Set as YamlSet, but got " + x)
     }
@@ -108,16 +116,25 @@ object MyYamlProtocol extends DefaultYamlProtocol {
   }
 
   implicit val artilleryCellFormat = yamlFormat2(ArtilleryCell)
-  implicit val artCellSeqFormat = new MutableISeqFormat[ArtilleryCell]
-  implicit val hullFormat = yamlFormat12(Hull)
 
-  class MutableISeqFormat[A: YamlFormat] extends YamlFormat[mutable.IndexedSeq[A]] {
+  val artilleryEquipped = viaSeq[mutable.IndexedSeq[ArtilleryCell], ArtilleryCell](mutable.ArraySeq.from(_))
 
-    override def read(yaml: YamlValue): mutable.IndexedSeq[A] = ???
-
-    override def write(obj: mutable.IndexedSeq[A]): YamlValue = obj.toSeq.toYaml
+  def hullFormat(implicit format: YamlFormat[mutable.IndexedSeq[ArtilleryCell]]): YamlFormat[Hull] = {
+    yamlFormat12(Hull)
   }
 
+  object ArtilleryCellStructure extends YamlFormat[mutable.IndexedSeq[ArtilleryCell]] {
+    override def read(yaml: YamlValue): mutable.IndexedSeq[ArtilleryCell] = yaml match {
+      case YamlObject(fields) => createArtCells(fields.map {
+        case (YamlString(key), YamlNumber(value)) => (ArtillerySlot.withName(key), value.toInt)
+        case _ => deserializationError("Expected String: Number mapping")
+      }.iterator)
+      case _ => deserializationError("Expected yaml object for cells")
+    }
+
+    override def write(obj: mutable.IndexedSeq[ArtilleryCell]): YamlValue = YamlArray(obj.map(_.toYaml).toVector)
+
+  }
 
   implicit val supplementalFormat = yamlFormat7(Supplemental)
 
@@ -125,7 +142,7 @@ object MyYamlProtocol extends DefaultYamlProtocol {
     override def read(yaml: YamlValue): Ship = ???
 
     override def write(obj: Ship): YamlValue = YamlObject(
-      YamlString("hull") -> obj.hull.toYaml,
+      YamlString("hull") -> (hullFormat(artilleryEquipped) write obj.hull),
       YamlString("essentials") -> obj.essentials.toYaml,
       YamlString("supplementals") -> obj.supplementals.toYaml,
 

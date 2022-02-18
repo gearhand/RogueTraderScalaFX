@@ -1,11 +1,9 @@
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.Artillery.findValues
 import com.github.gearhand.roguetraderscalafx.HullType.{Frigate, Raider, Transport}
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.mutable
-import scala.collection.mutable.IndexedSeq
 
 
 sealed trait Artillery extends EnumEntry {
@@ -57,13 +55,13 @@ object Artillery extends Enum[Artillery] {
     stats: ArtilleryStat
   ) extends Artillery
 
-  def createArtCells (slotList: Seq[(ArtillerySlot, Int)]): mutable.IndexedSeq[ArtilleryCell] = {
+  def createArtCells (slotList: IterableOnce[(ArtillerySlot, Int)]): mutable.IndexedSeq[ArtilleryCell] = {
     mutable.IndexedSeq.from(slotList).flatMap{
-      case (slot: ArtillerySlot, quantity: Int) => Array.fill(quantity) (ArtilleryCell(slot, None))
+      case (slot: ArtillerySlot, quantity: Int) => mutable.ArraySeq.fill(quantity) (ArtilleryCell(slot, None))
     }
   }
 
-  def createBattery: ((String, Set[HullType], Int, Int, Int, Int, String, Int, Int, Option[Set[ArtillerySlot]])) => Battery = ArtilleryStat.tupled andThen Battery
-  def createLance: ((String, Set[HullType], Int, Int, Int, Int, String, Int, Int, Option[Set[ArtillerySlot]])) => Lance = ArtilleryStat.tupled andThen Lance
+  val createBattery = ArtilleryStat.tupled andThen Battery
+  val createLance = ArtilleryStat.tupled andThen Lance
 
 }

@@ -1,0 +1,154 @@
+%YAML 1.2
+---
+Imperium:
+  - hullName: Паломническое судно типа «Джерико»
+    hullType: Transport
+    speed: 3
+    maneuverability: -10
+    awareness: +5
+    durability: 50
+    armor: 12
+    turretsClass: 1
+    space: 45
+    cost: 20
+    artilleryCells:
+      Left Board: 1
+      Right Board: 1
+      Forward: 1
+    traits: Грузовое судно
+  
+  - hullName: Торговое судно типа «Бродяга»
+    hullType: Transport
+    speed: 4
+    maneuverability: -5
+    awareness: +10
+    durability: 40
+    armor: 13
+    turretsClass: 1
+    space: 40
+    cost: 20
+    artilleryCells:
+      Deck: 1
+      Forward: 1
+    traits: Грузовое судно
+  
+  - hullName: Каперское судно типа «Асироф»
+    hullType: Raider
+    speed: 10
+    maneuverability: +23
+    awareness: +12
+    durability: 32
+    armor: 14
+    turretsClass: 1
+    space: 35
+    cost: 30
+    artilleryCells:
+      Deck: 1
+      Forward: 1
+    traits: ""
+  
+  - hullName: Торговый рейдер типа «Опустошение»
+    hullType: Raider
+    speed: 9
+    maneuverability: +25
+    awareness: +10
+    durability: 30
+    armor: 16
+    turretsClass: 1
+    space: 40
+    cost: 35
+    artilleryCells:
+      Deck: 1
+      Forward: 1
+    traits: ""
+  
+  - hullName: Фрегат типа «Меч»
+    hullType: Frigate
+    speed: 8
+    maneuverability: +20
+    awareness: +15
+    durability: 35
+    armor: 18
+    turretsClass: 2
+    space: 40
+    cost: 40
+    artilleryCells:
+      Deck: 2
+    traits: ""
+  
+  - hullName: Ударный фрегат типа «Буря»
+    hullType: Frigate
+    speed: 8
+    maneuverability: +18
+    awareness: +12
+    durability: 36
+    armor: 19
+    turretsClass: 1
+    space: 42
+    cost: 40
+    artilleryCells:
+      Deck: 2
+    traits: ""
+  
+  - hullName: Лёгкий крейсер типа «Неустрашимый»
+    hullType: Light Cruiser
+    speed: 7
+    maneuverability: +15
+    awareness: +22
+    durability: 60
+    armor: 19
+    turretsClass: 1
+    space: 60
+    cost: 55
+    artilleryCells:
+      Forward: 1
+      Left Board: 1
+      Right Board: 1
+    traits: ""
+  
+  - hullName: Крейсер типа «Лунный»
+    hullType: Cruiser
+    speed: 5
+    maneuverability: +10
+    awareness: +10
+    durability: 70
+    armor: 20
+    turretsClass: 2
+    space: 75
+    cost: 60
+    artilleryCells:
+      Forward: 1
+      Left Board: 2
+      Right Board: 2
+    traits: ""
+
+  # Следующие корпуса являются ободранными корпусами из примеров и требуют проверки
+  - hullName: Фрегат флота типа «Огненный шторм»
+    hullType: Frigate
+    speed: 8
+    maneuverability: +20
+    awareness: +13
+    durability: 33
+    armor: 18
+    turretsClass: 1
+    space: 40
+    cost: 50 # unknown
+    artilleryCells:
+      Deck: 1
+      Forward: 1
+    traits: ""
+
+  - hullName: Рейдер «Стая»
+    hullType: Raider
+    speed: 10
+    maneuverability: +30
+    awareness: +10
+    durability: 30
+    armor: 15
+    turretsClass: 1
+    space: 35
+    cost: 50 # unknown
+    artilleryCells:
+      Deck: 1
+      Forward: 1
+    traits: ""

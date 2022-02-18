@@ -103,7 +103,7 @@ class AppSuite extends AnyFunSuite {
     val catalog = List(lance, boardGun, regular)
 
     Algorithms.fillArtillery(hull, catalog)
-    println(hull.toYaml.prettyPrint)
+    println(hullFormat(artilleryEquipped).write(hull).prettyPrint)
 
   }
 
