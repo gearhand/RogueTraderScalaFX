@@ -8,14 +8,14 @@ case class EssentialStats(
   power: Int,
   space: Int,
   name: String,
-  price: Option[Int],
+  cost: Option[Int],
   traits: Option[String],
 )
 
 sealed trait Essential extends EnumEntry {
   val stats: EssentialStats
 
-  def score: (Int, Int, Int) = (stats.power, stats.space, stats.price.getOrElse(0))
+  def score: (Int, Int, Int) = (stats.power, stats.space, stats.cost.getOrElse(0))
 }
 
 object Essential extends Enum[Essential] {

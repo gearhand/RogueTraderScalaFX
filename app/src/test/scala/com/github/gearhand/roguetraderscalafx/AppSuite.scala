@@ -31,6 +31,12 @@ class AppSuite extends AnyFunSuite {
     assert(App.greeting() != null)
   }
 
+  test ("Sorting order") {
+    val list = List(1, 10 ,42, 15, 94, 3 ,2, 6)
+    val sorted = list.sortBy(_.toInt)
+    assert(sorted == List(1, 2, 3, 6, 10, 15, 42, 94))
+  }
+
   test("Components deserialization") {
 
     println(System.getProperty("user.dir"))

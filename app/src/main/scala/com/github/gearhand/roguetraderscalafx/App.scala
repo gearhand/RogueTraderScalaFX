@@ -3,7 +3,7 @@
  */
 package com.github.gearhand.roguetraderscalafx
 
-import com.github.gearhand.roguetraderscalafx.MyYamlProtocol.{ArtilleryCellStructure, EssentialsCatalogFormat, RaceFormat, driveListFormat, hullFormat, immSeqFormat, mapFormat}
+import com.github.gearhand.roguetraderscalafx.MyYamlProtocol._
 import com.github.gearhand.roguetraderscalafx.Race.Imperium
 import net.jcazevedo.moultingyaml._
 
@@ -15,7 +15,8 @@ import scalafx.geometry.Insets
 import scalafx.geometry.Pos.Center
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ChoiceBox, Label, TextField}
-import scalafx.scene.layout.{BorderPane, GridPane, HBox, VBox}
+import scalafx.scene.layout.{Border, BorderPane, BorderStroke, BorderStrokeStyle, BorderWidths, CornerRadii, GridPane}
+import scalafx.scene.paint.Color.Red
 
 import scala.io.Source.fromInputStream
 
@@ -26,33 +27,22 @@ import scala.io.Source.fromInputStream
  * Где-нибудь в начале или в верхней менюшке в меню настроек сделать выбор пресета
  */
 object App extends JFXApp3 {
-  //def main(args: Array[String]): Unit = {
-  //  println(greeting())
-
-  //  println(System.getProperty("user.dir"))
-  //  val source = Source.fromFile("src/test/resources/essentials.yml", "utf-8")
-  //  val yamlAst = try
-  //    EssentialsCatalogFormat.read(source.getLines().mkString("\n").parseYaml)
-  //  finally source.close()
-  //}
 
   def greeting(): String = "Hello, world!"
 
   override def start(): Unit = {
     stage = new JFXApp3.PrimaryStage {
 
-      //val firstScene = new VBox(
-      //  1.0, raceChoice, hullChoice, shipPointsField, advancedButton
-      //)
       implicit val codec = Codec.UTF8
+      val yamlString = (path:String) => fromInputStream(getClass.getResourceAsStream(path)).mkString.parseYaml
+
       val hullsCatalog = mapFormat(RaceFormat, immSeqFormat(hullFormat(ArtilleryCellStructure)))
-        .read(fromInputStream(getClass.getResourceAsStream("/hulls.yml")).mkString.parseYaml)
-      val artCatalog = fromInputStream(getClass.getResourceAsStream("/artillery.yml"))
-        .mkString.parseYaml
-      val essentialsCatalog = fromInputStream(getClass.getResourceAsStream("/essentials.yml"))
-        .mkString.parseYaml
-      val supplementalsCatalog = fromInputStream(getClass.getResourceAsStream("/supplemental.yml"))
-        .mkString.parseYaml
+        .read(yamlString("/hulls.yml"))
+        .map(v => (v._1, v._2.sortBy(_.cost).reverse))
+
+      val artCatalog = immSeqFormat(ArtilleryFormat) read yamlString("/artillery.yml")
+      val essentialsCatalog = EssentialsCatalogFormat read yamlString("/essentials.yml")
+      val supplementalsCatalog = immSeqFormat(supplementalFormat) read yamlString("/supplemental.yml")
 
       scene = new Scene {
         val raceChoice = new ChoiceBox(ObservableBuffer.from(Race.values)) {
@@ -61,7 +51,26 @@ object App extends JFXApp3 {
         val hullChoice = new ChoiceBox(ObservableBuffer.from(HullType.values)) {
           value = HullType.Transport
         }
-        val shipPoints = new TextField { maxWidth = 30; alignment = Center }
+        val shipPoints = new TextField {
+          maxWidth = 30
+          alignment = Center
+
+          text.onChange { (_, _, newVal) =>
+            newVal.toIntOption match {
+              case v@Some(value) =>
+                parsePoints = v
+                border.update(defBorder)
+              case None => border.update(redBorder)
+            }
+          }
+
+          val defBorder = Border.Empty
+          val redBorder = {
+            //val strokes = defBorder.getStrokes.get(0)
+            new Border(new BorderStroke(Red, BorderStrokeStyle.Solid, CornerRadii.Empty, BorderWidths.Default))
+          }
+          var parsePoints: Option[Int] = None
+        }
 
 
         val advancedButton = new Button("Advanced options")
@@ -80,15 +89,31 @@ object App extends JFXApp3 {
 
         val genButton = new Button("Generate") {
           onAction = _ => {
-            Algorithms.generate(
-              hullChoice.getValue,
-              shipPoints.getText.toInt, // TODO: Needs error handling!
-              hullsCatalog(Imperium),
-              null,
-              null,
-              null,
-              null
-            )
+            //shipPoints.text.value.toIntOption.map { points =>
+            //  Algorithms.generate(
+            //    hullChoice.getValue,
+            //    points, // TODO: Needs error handling!
+            //    hullsCatalog(Imperium),
+            //    essentialsCatalog,
+            //    artCatalog,
+            //    supplementalsCatalog,
+            //    null
+            //  )
+            //}
+            for {
+              points <- shipPoints.text.value.toIntOption
+            } yield {
+              println("Call to generate")
+              Algorithms.generate(
+                hullChoice.getValue,
+                points, // TODO: Needs error handling!
+                hullsCatalog(Imperium),
+                essentialsCatalog,
+                artCatalog,
+                supplementalsCatalog,
+                null
+              )
+            }
           }
         }
 

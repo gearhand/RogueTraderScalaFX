@@ -88,14 +88,17 @@ object MyYamlProtocol extends DefaultYamlProtocol {
 
 
   implicit object ArtillerySlotFormat extends YamlFormat[ArtillerySlot] {
-    override def read(yaml: YamlValue): ArtillerySlot = ???
+    override def read(yaml: YamlValue): ArtillerySlot = yaml match {
+      case YamlString(name) => ArtillerySlot.withName(name)
+      case _ => deserializationError("Expecting string for artillery slot")
+    }
 
     override def write(obj: ArtillerySlot): YamlValue = YamlString(obj.entryName)
   }
 
 
   implicit val artStatFormat = yamlFormat10(ArtilleryStat)
-  implicit object Artillery extends YamlFormat[Artillery] {
+  implicit object ArtilleryFormat extends YamlFormat[Artillery] {
 
     override def write(obj: Artillery): YamlValue = {
       val intermediate = obj.stats.toYaml.asYamlObject.fields +
@@ -105,7 +108,7 @@ object MyYamlProtocol extends DefaultYamlProtocol {
 
     override def read(yaml: YamlValue): Artillery = yaml match {
       case YamlObject(fields) =>
-        fields(YamlString("type)")).convertTo[String] match {
+        fields(YamlString("type")).convertTo[String] match {
           case "Battery" => Battery(yaml.convertTo[ArtilleryStat])
           case "Lance" => Lance(yaml.convertTo[ArtilleryStat])
           case "Unique" => Unique(yaml.convertTo[ArtilleryStat])
